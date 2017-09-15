@@ -3,56 +3,80 @@ var ctx = c.getContext("2d");
 
 var socket = io();
 
+socket.on("id", (newId) => {
+  socket.id = newId;
+});
+
 socket.on("update", (data) => {
   console.log(data);
+  players = data.players;
+  food = data.food;
+  tileSize = data.tileSize;
 });
+
+window.addEventListener('keydown',this.check,false);
+
+function check(e) {
+  socket.emit("move", e.keyCode);
+  console.log(e.keyCode);
+}
+
+var players = [];
+var food = [];
 
 var midX = 0;
 var midY = 0;
+tileSize = 0;
 
-var otherX = 0;
-var otherY = 120;
+newPlayer();
+render();
 
-initCanvas();
-renderBackground();
+function findSelf(){
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].id === socket.id){
+      console.log("Hey");
+      midX = players[i].x * tileSize;
+      midY = players[i].y * tileSize;
+      break;
+    }
+  }
+}
 
-function initCanvas() {
-    $('#canvas').attr("width",$(window).width());
-   $('#canvas').attr("height",$(window).height());
+function render(){
+  $('#canvas').attr("width",$(window).width());
+  $('#canvas').attr("height",$(window).height());
+  findSelf();
+  renderBackground();
+  drawPlayers(players);
+  drawObject(food);
+  requestAnimationFrame(render);
 }
 
 function renderBackground(){
-  requestAnimationFrame(renderBackground);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  midX -= 0.5;
-  midY -= 0.25;
-  var scrollX = midX - canvas.width / 2;
-  var scrollY = midY - canvas.height / 2;
+  scrollX = midX - canvas.width / 2;
+  scrollY = midY - canvas.height / 2;
+}
 
-  for (var i = 0; i < canvas.width / 64; i++) {
-    ctx.beginPath();
-    ctx.moveTo(64 * i - (scrollX % 64), 0);
-    ctx.lineTo(64 * i - (scrollX % 64), canvas.height);
-    ctx.stroke();
+function drawPlayers(players){
+  for (var i = 0; i < players.length; i++) {
+    drawCircle(players[i].x, players[i].y);
+    drawObject(players[i].tail);
   }
+}
 
-  for (var i = 0; i < canvas.width / 64; i++) {
-    ctx.beginPath();
-    ctx.moveTo(0, 64 * i - (scrollY % 64));
-    ctx.lineTo(canvas.width, 64 * i - (scrollY % 64));
-    ctx.stroke();
+function drawObject (posObject){
+  for (var i = 0; i < posObject.length; i++) {
+    drawCircle(posObject[i].x, posObject[i].y);
   }
+}
 
-  ctx.moveTo(0,0);
+function drawCircle(x, y){
   ctx.beginPath();
-  ctx.arc(midX - scrollX,midY - scrollY,50,0,2*Math.PI);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(otherX - scrollX,otherY - scrollY,50,0,2*Math.PI);
+  ctx.arc(x * tileSize - scrollX, y * tileSize - scrollY,16,0,2*Math.PI);
   ctx.stroke();
 }
 
-function renderDirection(){
-
+function newPlayer(){
+  socket.emit("newPlayer", "Et navn");
 }

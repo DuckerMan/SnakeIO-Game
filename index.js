@@ -32,7 +32,7 @@ Game.prototype.getGameData = function () {
 Game.prototype.getData = function (items) {
   var reList = [];
   for (var i = 0; i < items.length; i++) {
-    items[i].getData();
+    reList.push(items[i].getData());
   }
   return reList;
 };
@@ -40,18 +40,21 @@ Game.prototype.getData = function (items) {
 Game.prototype.startGame = function () {
   setInterval(() => {
     this.update();
-  }, 2000);
+  }, 250);
 };
 
 Game.prototype.update = function () {
   this.checkCollision();
   this.move();
   this.server.emit("update", this.getGameData());
+
+  if (Math.random() < 0.1){
+    this.food.push(new Food(randomInt(0, this.width), randomInt(0, this.height)));
+  }
 };
 
 Game.prototype.checkCollision = function () {
   for (var i = 0; i < this.players.length; i++) {
-    console.log(this.getPlayerList());
     if (this.checkTail(this.players[i].player, this.getPlayerList())){
       this.players[i].emit("dead", true);
       break;
@@ -65,7 +68,6 @@ Game.prototype.checkCollision = function () {
 
 Game.prototype.checkTail = function (player, playerList) {
   for (var i = 0; i < playerList.length; i++) {
-    console.log(playerList[i].tail);
     if (player.checkCollision(playerList[i].tail)){
       return true;
     }
@@ -86,13 +88,11 @@ Game.prototype.addPlayer = function (socketPlayer) {
   socketPlayer.player.xSpeed = 0;
   socketPlayer.player.ySpeed = 1;
   this.players.push(socketPlayer);
-  console.log(this.getGameData());
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
-  this.players[socketPlayer].player.destroy();
+  this.players[this.players.indexOf(socketPlayer)].player.destroy();
   this.players.splice(this.players.indexOf(socketPlayer), 1);
-  console.log(this.getGameData());
 };
 
 Game.prototype.getPlayerList = function () {
@@ -103,9 +103,9 @@ Game.prototype.getPlayerList = function () {
   return reList;
 };
 
-var Food = function (){
-  this.x;
-  this.y;
+var Food = function (x, y){
+  this.x = x;
+  this.y = y;
 }
 
 Food.prototype.FindNewLocation = function (width, height) {
@@ -120,15 +120,16 @@ Food.prototype.getData = function () {
   }
 };
 
-var Player = function () {
+var Player = function (id) {
   this.tail = [];
+  this.id = id;
 }
 
 Player.prototype.checkCollision = function (points) {
   for (var i = 0; i < points.length; i++) {
     if (this.x === points[i].x && this.y === points[i].y){
       if (points[i] instanceof Food){
-        points[i].splice(i, 1);
+        points.splice(i, 1);
       }
       return true;
     }
@@ -178,7 +179,7 @@ Player.prototype.getData = function () {
   }
 };
 
-Player.prototype.destory = function () {
+Player.prototype.destroy = function () {
 
 };
 
@@ -195,13 +196,32 @@ http.listen(3000, function(){
 var game = new Game(io);
 
 io.on('connection', (socket) => {
-
+  socket.emit("id", socket.id);
   socket.on('newPlayer', function() {
     game.addPlayer(socket);
   });
 
-  socket.on('onMove', function(data){
+  socket.on('move', (key) => {
+    switch (key) {
+      case 38:
+        socket.player.xSpeed = 0;
+        socket.player.ySpeed = -1;
+        break;
+      case 39:
+        socket.player.xSpeed = 1
+        socket.player.ySpeed = 0
+        break;
+      case 40:
+        socket.player.xSpeed = 0
+        socket.player.ySpeed = 1
+        break;
+      case 37:
+        socket.player.xSpeed = -1;
+        socket.player.ySpeed = 0
+        break;
+      default:
 
+    }
   });
 
   socket.on('disconnect', function(){
