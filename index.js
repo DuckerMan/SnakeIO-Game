@@ -9,8 +9,8 @@ function randomInt(min, max){
 
 var Game = function (server){
   this.server = server;
-  this.width = 10;
-  this.height = 10;
+  this.width = 100;
+  this.height = 100;
   this.tileSize = 32;
 
   this.food = [];
@@ -40,7 +40,7 @@ Game.prototype.getData = function (items) {
 Game.prototype.startGame = function () {
   setInterval(() => {
     this.update();
-  }, 250);
+  }, 50);
 };
 
 Game.prototype.update = function () {
@@ -53,14 +53,19 @@ Game.prototype.update = function () {
   }
 };
 
+Game.prototype.dead = function (player) {
+  console.log(player.id);
+  player.emit("dead", player.id);
+  this.removePlayer(player);
+};
+
 Game.prototype.checkCollision = function () {
   for (var i = 0; i < this.players.length; i++) {
-    if (this.checkTail(this.players[i].player, this.getPlayerList())){
-      this.players[i].emit("dead", true);
-      break;
+    if (this.checkTail(this.players[i].player, this.getPlayerList()) || this.checkOutSide(this.players[i].player)){
+      this.dead(this.players[i]);
+      i--;
     }
-
-    if (this.players[i].player.checkCollision(this.food)){
+    else if (this.players[i].player.checkCollision(this.food)){
       this.players[i].player.addTail();
     }
   }
@@ -81,12 +86,21 @@ Game.prototype.move = function () {
   }
 };
 
+Game.prototype.checkOutSide = function (ply) {
+  if (ply.x >= 0 && ply.x < this.width && ply.y >= 0 && ply.y < this.height){
+    return false;
+  }
+  return true;
+};
+
 Game.prototype.addPlayer = function (socketPlayer) {
   socketPlayer.player = new Player(socketPlayer.id);
+  console.log(socketPlayer.id)
   socketPlayer.player.x = randomInt(0, this.width);
   socketPlayer.player.y = randomInt(0, this.height);
   socketPlayer.player.xSpeed = 0;
   socketPlayer.player.ySpeed = 1;
+  socketPlayer.player.color = "#00FF00";
   this.players.push(socketPlayer);
 };
 
@@ -175,7 +189,8 @@ Player.prototype.getData = function () {
     x: this.x,
     y: this.y,
     tail: this.tail,
-    id: this.id
+    id: this.id,
+    color: this.color
   }
 };
 
@@ -196,6 +211,7 @@ http.listen(3000, function(){
 var game = new Game(io);
 
 io.on('connection', (socket) => {
+  console.log("Connected on: " + socket.id)
   socket.emit("id", socket.id);
   socket.on('newPlayer', function() {
     game.addPlayer(socket);
@@ -221,12 +237,6 @@ io.on('connection', (socket) => {
         break;
       default:
 
-    }
-  });
-
-  socket.on('disconnect', function(){
-    if (socket.player){
-      game.removePlayer(socket);
     }
   });
 });

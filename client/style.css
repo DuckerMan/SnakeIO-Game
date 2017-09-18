@@ -1,17 +1,11 @@
-canvas {
-  width: 100%;
-  height: 100%;
-
-  background: #FFFF00;
-}
-
 body{
   overflow: hidden;
   padding: 0;
   margin: 0
 }
 
-.scoreboard{
-  width: 20%;
-  color: #EEEEEE;
+canvas {
+  background: #FFFF00;
+  width: 100%;
+  height: 100%;
 }
