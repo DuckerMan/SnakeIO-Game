@@ -53,8 +53,8 @@ function renderBackground(){
   var tempScrollX = midX - width / 2;
   var tempScrollY = midY - height / 2;
 
-  scrollX += ((tempScrollX - scrollX) * 0.05);
-  scrollY += ((tempScrollY - scrollY) * 0.05);
+  scrollX += ((tempScrollX - scrollX) * 0.02);
+  scrollY += ((tempScrollY - scrollY) * 0.02);
 
   line(-scrollX,-scrollY, mapWidth * tileSize - scrollX,-scrollY);
   line( mapWidth * tileSize - scrollX,-scrollY, mapWidth * tileSize - scrollX,mapHeight * tileSize -scrollY);

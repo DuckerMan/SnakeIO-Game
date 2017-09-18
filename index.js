@@ -9,9 +9,10 @@ function randomInt(min, max){
 
 var Game = function (server){
   this.server = server;
-  this.width = 100;
-  this.height = 100;
+  this.width = 200;
+  this.height = 200;
   this.tileSize = 24;
+  this.amountOfFood = 500;
 
   this.food = [];
   this.players = [];
@@ -38,6 +39,8 @@ Game.prototype.getData = function (items) {
 };
 
 Game.prototype.startGame = function () {
+  this.placeFood();
+
   setInterval(() => {
     this.update();
   }, 150);
@@ -47,9 +50,13 @@ Game.prototype.update = function () {
   this.checkCollision();
   this.move();
   this.server.emit("update", this.getGameData());
+};
 
-  if (Math.random() < 0.1){
-    this.food.push(new Food(randomInt(0, this.width), randomInt(0, this.height)));
+Game.prototype.placeFood = function () {
+  for (var i = 0; i < this.amountOfFood; i++) {
+    var food = new Food();
+    food.FindNewLocation(randomInt(0, this.width), randomInt(0, this.height));
+    this.food.push(food);
   }
 };
 
@@ -64,7 +71,7 @@ Game.prototype.checkCollision = function () {
       this.dead(this.players[i]);
       i--;
     }
-    else if (this.players[i].player.checkCollision(this.food)){
+    else if (this.players[i].player.checkCollision(this.food, this.width, this.height)){
       this.players[i].player.addTail();
     }
   }
@@ -104,7 +111,7 @@ Game.prototype.addPlayer = function (socketPlayer) {
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
-  this.players[this.players.indexOf(socketPlayer)].player.destroy();
+  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food);
   this.players.splice(this.players.indexOf(socketPlayer), 1);
   socketPlayer.player = null;
 };
@@ -139,11 +146,11 @@ var Player = function (id) {
   this.id = id;
 }
 
-Player.prototype.checkCollision = function (points) {
+Player.prototype.checkCollision = function (points, width, height) {
   for (var i = 0; i < points.length; i++) {
     if (this.x === points[i].x && this.y === points[i].y){
       if (points[i] instanceof Food){
-        points.splice(i, 1);
+        points[i].FindNewLocation(width, height);
       }
       return true;
     }
@@ -194,8 +201,20 @@ Player.prototype.getData = function () {
   }
 };
 
-Player.prototype.destroy = function () {
+Player.prototype.setSpeed = function (x, y) {
+  if (this.xSpeed != x && this.ySpeed != y || this.tail.length <= 1){
+    this.xSpeed = x;
+    this.ySpeed = y;
+  }
+};
 
+Player.prototype.destroy = function (food) {
+  for (var i = 0; i < this.tail.length; i++) {
+    var tempFood = new Food();
+    tempFood.x = this.tail[i].x;
+    tempFood.y = this.tail[i].y;
+    food.push(tempFood);
+  }
 };
 
 app.use( express.static( __dirname + '/client' ));
@@ -221,20 +240,16 @@ io.on('connection', (socket) => {
     if (socket.player != null){
       switch (key) {
         case 38:
-          socket.player.xSpeed = 0;
-          socket.player.ySpeed = -1;
+          socket.player.setSpeed(0,-1);
           break;
         case 39:
-          socket.player.xSpeed = 1
-          socket.player.ySpeed = 0
+          socket.player.setSpeed(1,0);
           break;
         case 40:
-          socket.player.xSpeed = 0
-          socket.player.ySpeed = 1
+          socket.player.setSpeed(0,1);
           break;
         case 37:
-          socket.player.xSpeed = -1;
-          socket.player.ySpeed = 0
+          socket.player.setSpeed(-1,0);
           break;
       }
     }
