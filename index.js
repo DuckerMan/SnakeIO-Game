@@ -11,7 +11,7 @@ var Game = function (server){
   this.server = server;
   this.width = 100;
   this.height = 100;
-  this.tileSize = 32;
+  this.tileSize = 24;
 
   this.food = [];
   this.players = [];
@@ -40,7 +40,7 @@ Game.prototype.getData = function (items) {
 Game.prototype.startGame = function () {
   setInterval(() => {
     this.update();
-  }, 50);
+  }, 150);
 };
 
 Game.prototype.update = function () {
@@ -54,7 +54,6 @@ Game.prototype.update = function () {
 };
 
 Game.prototype.dead = function (player) {
-  console.log(player.id);
   player.emit("dead", player.id);
   this.removePlayer(player);
 };
@@ -96,7 +95,6 @@ Game.prototype.checkOutSide = function (ply) {
 Game.prototype.addPlayer = function (socketPlayer) {
   socketPlayer.player = null;
   socketPlayer.player = new Player(socketPlayer.id);
-  console.log(socketPlayer.id)
   socketPlayer.player.x = randomInt(0, this.width);
   socketPlayer.player.y = randomInt(0, this.height);
   socketPlayer.player.xSpeed = 0;
@@ -108,6 +106,7 @@ Game.prototype.addPlayer = function (socketPlayer) {
 Game.prototype.removePlayer = function (socketPlayer) {
   this.players[this.players.indexOf(socketPlayer)].player.destroy();
   this.players.splice(this.players.indexOf(socketPlayer), 1);
+  socketPlayer.player = null;
 };
 
 Game.prototype.getPlayerList = function () {
@@ -219,32 +218,35 @@ io.on('connection', (socket) => {
   });
 
   socket.on('move', (key) => {
-    switch (key) {
-      case 38:
-        socket.player.xSpeed = 0;
-        socket.player.ySpeed = -1;
-        break;
-      case 39:
-        socket.player.xSpeed = 1
-        socket.player.ySpeed = 0
-        break;
-      case 40:
-        socket.player.xSpeed = 0
-        socket.player.ySpeed = 1
-        break;
-      case 37:
-        socket.player.xSpeed = -1;
-        socket.player.ySpeed = 0
-        break;
-      default:
-
+    if (socket.player != null){
+      switch (key) {
+        case 38:
+          socket.player.xSpeed = 0;
+          socket.player.ySpeed = -1;
+          break;
+        case 39:
+          socket.player.xSpeed = 1
+          socket.player.ySpeed = 0
+          break;
+        case 40:
+          socket.player.xSpeed = 0
+          socket.player.ySpeed = 1
+          break;
+        case 37:
+          socket.player.xSpeed = -1;
+          socket.player.ySpeed = 0
+          break;
+      }
     }
   });
 
   socket.on("disconnect", () => {
     if (socket.player != null){
       game.removePlayer(socket);
-      console.log("Player " + socket + " Disconneted");
     }
+    else{
+      console.log("Disconnected without player");
+    }
+    console.log("Socket: " + socket + " Disconneted");
   })
 });

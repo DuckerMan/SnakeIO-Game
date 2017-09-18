@@ -11,6 +11,8 @@ var food = [];
 
 var midX = 0;
 var midY = 0;
+var scrollX = 0;
+var scrollY = 0;
 var tileSize = 0;
 var mapWidth;
 var mapHeight;
@@ -43,13 +45,16 @@ function findSelf(){
 function render(){
   findSelf();
   renderBackground();
+  drawObject(food, drawCircle, color("#FF0000"));
   drawPlayers(players);
-  drawObject(food, color("#FF0000"));
 }
 
 function renderBackground(){
-  scrollX = midX - width / 2;
-  scrollY = midY - height / 2;
+  var tempScrollX = midX - width / 2;
+  var tempScrollY = midY - height / 2;
+
+  scrollX += ((tempScrollX - scrollX) * 0.05);
+  scrollY += ((tempScrollY - scrollY) * 0.05);
 
   line(-scrollX,-scrollY, mapWidth * tileSize - scrollX,-scrollY);
   line( mapWidth * tileSize - scrollX,-scrollY, mapWidth * tileSize - scrollX,mapHeight * tileSize -scrollY);
@@ -59,21 +64,33 @@ function renderBackground(){
 
 function drawPlayers(players){
   for (var i = 0; i < players.length; i++) {
-    drawCircle(players[i].x, players[i].y, color(players[i].color));
-    drawObject(players[i].tail, color(players[i].color));
+    drawRect(players[i].x, players[i].y, color(players[i].color));
+    drawObject(players[i].tail, drawRect, color(players[i].color));
   }
 }
 
-function drawObject (posObject, color){
+function drawObject (posObject, obj, color){
   for (var i = 0; i < posObject.length; i++) {
-    drawCircle(posObject[i].x, posObject[i].y, color);
+    obj(posObject[i].x, posObject[i].y, color);
   }
+}
+
+function isInside(x,y){
+  return (x * tileSize > scrollX - 30 && x * tileSize < scrollX + width + 30 && y * tileSize > scrollY -30 && y * tileSize < scrollY + height + 30);
 }
 
 function drawCircle(x, y, color){
-  if (x * tileSize > scrollX && x * tileSize < scrollX + width && y * tileSize > scrollY && y * tileSize < scrollY + height){
+  if (isInside(x,y)){
     fill(color);
     ellipse(x * tileSize - scrollX + tileSize / 2, y * tileSize - scrollY + tileSize / 2,tileSize);
+  }
+}
+
+function drawRect(x, y, color){
+  if (isInside(x,y)){
+    fill(color);
+    rectMode(CENTER);
+    rect(x * tileSize - scrollX + tileSize / 2, y * tileSize - scrollY + tileSize / 2,tileSize,tileSize);
   }
 }
 
