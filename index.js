@@ -61,9 +61,7 @@ Game.prototype.dead = function (player) {
 
 Game.prototype.checkCollision = function () {
   for (var i = 0; i < this.players.length; i++) {
-    var killedBy = this.checkTail(this.players[i].player, this.getPlayerList());
-    if (killedBy >= 0 || this.checkOutSide(this.players[i].player)){
-      console.log(this.players[i].player.id + "Killed by" + this.players[killedBy].player.id);
+    if (this.checkTail(this.players[i].player, this.getPlayerList()) || this.checkOutSide(this.players[i].player)){
       this.dead(this.players[i]);
       i--;
     }
@@ -76,10 +74,10 @@ Game.prototype.checkCollision = function () {
 Game.prototype.checkTail = function (player, playerList) {
   for (var i = 0; i < playerList.length; i++) {
     if (player.checkCollision(playerList[i].tail)){
-      return playerList[i];
+      return true;
     }
   }
-  return -1;
+  return false;
 };
 
 Game.prototype.move = function () {
