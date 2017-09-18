@@ -61,7 +61,9 @@ Game.prototype.dead = function (player) {
 
 Game.prototype.checkCollision = function () {
   for (var i = 0; i < this.players.length; i++) {
-    if (this.checkTail(this.players[i].player, this.getPlayerList()) || this.checkOutSide(this.players[i].player)){
+    var killedBy = this.checkTail(this.players[i].player, this.getPlayerList());
+    if (killedBy >= 0 || this.checkOutSide(this.players[i].player)){
+      console.log(this.players[i].player.id + "Killed by" + this.players[killedBy].player.id);
       this.dead(this.players[i]);
       i--;
     }
@@ -74,10 +76,10 @@ Game.prototype.checkCollision = function () {
 Game.prototype.checkTail = function (player, playerList) {
   for (var i = 0; i < playerList.length; i++) {
     if (player.checkCollision(playerList[i].tail)){
-      return true;
+      return playerList[i];
     }
   }
-  return false;
+  return -1;
 };
 
 Game.prototype.move = function () {
@@ -94,12 +96,13 @@ Game.prototype.checkOutSide = function (ply) {
 };
 
 Game.prototype.addPlayer = function (socketPlayer) {
+  socketPlayer.player = null;
   socketPlayer.player = new Player(socketPlayer.id);
   console.log(socketPlayer.id)
   socketPlayer.player.x = randomInt(0, this.width);
   socketPlayer.player.y = randomInt(0, this.height);
   socketPlayer.player.xSpeed = 0;
-  socketPlayer.player.ySpeed = 1;
+  socketPlayer.player.ySpeed = 0;
   socketPlayer.player.color = "#00FF00";
   this.players.push(socketPlayer);
 };
@@ -239,4 +242,11 @@ io.on('connection', (socket) => {
 
     }
   });
+
+  socket.on("disconnect", () => {
+    if (socket.player != null){
+      game.removePlayer(socket);
+      console.log("Player " + socket + " Disconneted");
+    }
+  })
 });

@@ -53,7 +53,7 @@ function renderBackground(){
 
   line(-scrollX,-scrollY, mapWidth * tileSize - scrollX,-scrollY);
   line( mapWidth * tileSize - scrollX,-scrollY, mapWidth * tileSize - scrollX,mapHeight * tileSize -scrollY);
-  line(-scrollX,mapHeight * tileSize -scrollY);
+  line(mapWidth * tileSize - scrollX,mapHeight * tileSize -scrollY, -scrollX,mapHeight * tileSize -scrollY);
   line(-scrollX,mapHeight * tileSize -scrollY, -scrollX,-scrollY);
 }
 
