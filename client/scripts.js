@@ -1,5 +1,3 @@
-var c = document.getElementById("canvas");
-var ctx = c.getContext("2d");
 var socket = io();
 
 window.addEventListener('keydown',this.check,false);
@@ -14,12 +12,23 @@ var food = [];
 var midX = 0;
 var midY = 0;
 var tileSize = 0;
-var width;
-var height;
+var mapWidth;
+var mapHeight;
 var fpsCounter = 0;
 var od = 0;
 
-render();
+function setup(){
+  createCanvas(windowWidth, windowHeight);
+}
+
+function draw(){
+  background(255);
+  render();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
 
 function findSelf(){
   for (var i = 0; i < players.length; i++) {
@@ -32,40 +41,26 @@ function findSelf(){
 }
 
 function render(){
-  $('#canvas').attr("width",$(window).width());
-  $('#canvas').attr("height",$(window).height());
   findSelf();
   renderBackground();
   drawPlayers(players);
-  drawObject(food, "#FF0000");
-
-  var d = new Date().getTime();
-  if (d >= od+1000){
-    od = d;
-    console.log(fpsCounter);
-    fpsCounter = 0;
-  }
-  fpsCounter++;
-  requestAnimationFrame(render);
+  drawObject(food, color("#FF0000"));
 }
 
 function renderBackground(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  scrollX = midX - canvas.width / 2;
-  scrollY = midY - canvas.height / 2;
+  scrollX = midX - width / 2;
+  scrollY = midY - height / 2;
 
-  ctx.moveTo(-scrollX,-scrollY);
-  ctx.lineTo(width * tileSize - scrollX,-scrollY);
-  ctx.lineTo(width * tileSize - scrollX,height * tileSize -scrollY);
-  ctx.lineTo(-scrollX,height * tileSize -scrollY);
-  ctx.lineTo(-scrollX,-scrollY);
-  ctx.stroke();
+  line(-scrollX,-scrollY, mapWidth * tileSize - scrollX,-scrollY);
+  line( mapWidth * tileSize - scrollX,-scrollY, mapWidth * tileSize - scrollX,mapHeight * tileSize -scrollY);
+  line(-scrollX,mapHeight * tileSize -scrollY);
+  line(-scrollX,mapHeight * tileSize -scrollY, -scrollX,-scrollY);
 }
 
 function drawPlayers(players){
   for (var i = 0; i < players.length; i++) {
-    drawCircle(players[i].x, players[i].y, players[i].color);
-    drawObject(players[i].tail, players[i].color);
+    drawCircle(players[i].x, players[i].y, color(players[i].color));
+    drawObject(players[i].tail, color(players[i].color));
   }
 }
 
@@ -76,12 +71,9 @@ function drawObject (posObject, color){
 }
 
 function drawCircle(x, y, color){
-  if (x * tileSize > scrollX && x * tileSize < scrollX + canvas.width && y * tileSize > scrollY && y * tileSize < scrollY + canvas.height){
-    ctx.beginPath();
-    ctx.arc(x * tileSize - scrollX + tileSize / 2, y * tileSize - scrollY + tileSize / 2,16,0,2*Math.PI);
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.stroke();
+  if (x * tileSize > scrollX && x * tileSize < scrollX + width && y * tileSize > scrollY && y * tileSize < scrollY + height){
+    fill(color);
+    ellipse(x * tileSize - scrollX + tileSize / 2, y * tileSize - scrollY + tileSize / 2,tileSize);
   }
 }
 
@@ -108,8 +100,8 @@ socket.on("update", (data) => {
   players = data.players;
   food = data.food;
   tileSize = data.tileSize;
-  width = data.width;
-  height = data.height;
+  mapWidth = data.width;
+  mapHeight = data.height;
 });
 
 socket.on("dead", (data) =>{

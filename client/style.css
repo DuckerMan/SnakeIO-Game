@@ -3,9 +3,3 @@ body{
   padding: 0;
   margin: 0
 }
-
-canvas {
-  background: #FFFF00;
-  width: 100%;
-  height: 100%;
-}
