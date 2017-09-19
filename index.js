@@ -68,12 +68,14 @@ Game.prototype.dead = function (player) {
 
 Game.prototype.checkCollision = function () {
   for (var i = 0; i < this.players.length; i++) {
-    if (this.checkTail(this.players[i].player, this.getPlayerList()) || this.checkOutSide(this.players[i].player)){
-      this.dead(this.players[i]);
-      i--;
-    }
-    else if (this.players[i].player.checkCollision(this.food, this.width, this.height)){
-      this.players[i].player.addTail();
+    if (this.players[i].player != null) {
+      if (this.checkTail(this.players[i].player, this.getPlayerList()) || this.checkOutSide(this.players[i].player)){
+        this.dead(this.players[i]);
+        i--;
+      }
+      else if (this.players[i].player.checkCollision(this.food, this.width, this.height)){
+        this.players[i].player.addTail();
+      }
     }
   }
 };
@@ -89,7 +91,9 @@ Game.prototype.checkTail = function (player, playerList) {
 
 Game.prototype.move = function () {
   for (var i = 0; i < this.players.length; i++) {
-    this.players[i].player.move();
+    if (this.players[i].player != null) {
+      this.players[i].player.move();
+    }
   }
 };
 
