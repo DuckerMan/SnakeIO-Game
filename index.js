@@ -12,7 +12,9 @@ var Game = function (server){
   this.width = 100;
   this.height = 100;
   this.tileSize = 24;
-  this.amountOfFood = 100;
+  this.amountOfFood = 25;
+  this.foodTimer = 0;
+  this.foodLifetime = 250;
 
   this.food = [];
   this.players = [];
@@ -39,23 +41,22 @@ Game.prototype.getData = function (items) {
 };
 
 Game.prototype.startGame = function () {
-  this.placeFood();
-
   setInterval(() => {
     this.update();
-  }, 150);
+  }, 110);
 };
 
 Game.prototype.update = function () {
   this.checkCollision();
   this.move();
+  this.updateFood();
   this.server.emit("update", this.getGameData());
 };
 
 Game.prototype.placeFood = function () {
   for (var i = 0; i < this.amountOfFood; i++) {
-    var food = new Food();
-    food.FindNewLocation(randomInt(0, this.width), randomInt(0, this.height));
+    var food = new Food(-10, -10, this.foodLifetime);
+    food.FindNewLocation(this.width, this.height);
     this.food.push(food);
   }
 };
@@ -92,6 +93,23 @@ Game.prototype.move = function () {
   }
 };
 
+Game.prototype.updateFood = function () {
+  for (var i = 0; i < this.food.length; i++) {
+    this.food[i].update();
+
+    if (this.food[i].lifetime <= 0){
+      this.food.splice(i, 1);
+      i--;
+    }
+  }
+
+  if (this.foodTimer <= 0){
+    this.placeFood();
+    this.foodTimer = this.foodLifetime;
+  }
+  this.foodTimer--;
+};
+
 Game.prototype.checkOutSide = function (ply) {
   if (ply.x >= 0 && ply.x < this.width && ply.y >= 0 && ply.y < this.height){
     return false;
@@ -112,7 +130,7 @@ Game.prototype.addPlayer = function (socketPlayer, data) {
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
-  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food);
+  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, 10000);
   this.players.splice(this.players.indexOf(socketPlayer), 1);
   socketPlayer.player = null;
 };
@@ -125,14 +143,19 @@ Game.prototype.getPlayerList = function () {
   return reList;
 };
 
-var Food = function (x, y){
+var Food = function (x, y, lifetime){
   this.x = x;
   this.y = y;
+  this.lifetime = lifetime;
 }
 
 Food.prototype.FindNewLocation = function (width, height) {
   this.x = randomInt(0, width);
   this.y = randomInt(0, height);
+};
+
+Food.prototype.update = function () {
+  this.lifetime--;
 };
 
 Food.prototype.getData = function () {
@@ -153,7 +176,8 @@ Player.prototype.checkCollision = function (points, width, height) {
   for (var i = 0; i < points.length; i++) {
     if (this.x === points[i].x && this.y === points[i].y){
       if (points[i] instanceof Food){
-        points[i].FindNewLocation(width, height);
+        points.splice(i, 1);
+        i--;
       }
       return true;
     }
@@ -216,12 +240,14 @@ Player.prototype.setSpeed = function (x, y) {
   }
 };
 
-Player.prototype.destroy = function (food) {
+Player.prototype.destroy = function (food, lifetime) {
   for (var i = 0; i < this.tail.length; i++) {
-    var tempFood = new Food();
-    tempFood.x = this.tail[i].x;
-    tempFood.y = this.tail[i].y;
-    food.push(tempFood);
+    if (Math.random() < 0.7){
+      var tempFood = new Food(0, 0, lifetime);
+      tempFood.x = this.tail[i].x;
+      tempFood.y = this.tail[i].y;
+      food.push(tempFood);
+    }
   }
 };
 
