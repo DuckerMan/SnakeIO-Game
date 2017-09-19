@@ -209,10 +209,17 @@ Player.prototype.getData = function () {
   }
 };
 
-Player.prototype.setSpeed = function (x, y) {
-  if (this.xSpeed != x && this.ySpeed != y || this.tail.length <= 1){
-    this.tempXSpeed = x;
-    this.tempYSpeed = y;
+Player.prototype.setSpeed = function (lorr) {
+  var t;
+  if (lorr == "right"){
+    t = this.xSpeed;
+    this.xSpeed = this.ySpeed;
+    this.ySpeed = t;
+  }
+  else{
+    t = this.xSpeed;
+    this.xSpeed = this.ySpeed * -1;
+    this.ySpeed = t * -1;
   }
 };
 
@@ -251,16 +258,16 @@ io.on('connection', (socket) => {
     if (socket.player != null){
       switch (key) {
         case 38:
-          socket.player.setSpeed(0,-1);
+          //socket.player.setSpeed(0,-1);
           break;
         case 39:
-          socket.player.setSpeed(1,0);
+          socket.player.setSpeed("right");
           break;
         case 40:
-          socket.player.setSpeed(0,1);
+          //socket.player.setSpeed(0,1);
           break;
         case 37:
-          socket.player.setSpeed(-1,0);
+          socket.player.setSpeed("left");
           break;
       }
     }
