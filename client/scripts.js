@@ -18,6 +18,8 @@ var mapWidth;
 var mapHeight;
 var backgroundColor = "#FFFFFF";
 
+p5.disableFriendlyErrors = true;
+
 function setup(){
   createCanvas(windowWidth, windowHeight);
 }

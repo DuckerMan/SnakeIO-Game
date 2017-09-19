@@ -12,7 +12,7 @@ var Game = function (server){
   this.width = 100;
   this.height = 100;
   this.tileSize = 24;
-  this.amountOfFood = 200;
+  this.amountOfFood = 100;
 
   this.food = [];
   this.players = [];
