@@ -12,7 +12,7 @@ var Game = function (server){
   this.width = 100;
   this.height = 100;
   this.tileSize = 24;
-  this.amountOfFood = 25;
+  this.amountOfFood = 10;
   this.foodTimer = 0;
   this.foodLifetime = 250;
 
@@ -54,7 +54,7 @@ Game.prototype.update = function () {
 };
 
 Game.prototype.placeFood = function () {
-  for (var i = 0; i < this.amountOfFood; i++) {
+  for (var i = 0; i < this.amountOfFood * this.players.length; i++) {
     var food = new Food(-10, -10, this.foodLifetime);
     food.FindNewLocation(this.width, this.height);
     this.food.push(food);
