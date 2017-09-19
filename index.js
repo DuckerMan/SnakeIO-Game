@@ -144,7 +144,9 @@ Game.prototype.removePlayer = function (socketPlayer) {
 Game.prototype.getPlayerList = function () {
   var reList = [];
   for (var i = 0; i < this.players.length; i++) {
-    reList.push(this.players[i].player)
+    if (this.players[i].player != null){
+      reList.push(this.players[i].player)
+    }
   }
   return reList;
 };
