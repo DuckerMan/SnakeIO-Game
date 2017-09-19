@@ -82,7 +82,7 @@ Game.prototype.checkCollision = function () {
 
 Game.prototype.checkTail = function (player, playerList) {
   for (var i = 0; i < playerList.length; i++) {
-    if (playerList[i] != null)
+    if (playerList[i] != null){
       if (player.checkCollision(playerList[i].tail)){
         return true;
       }
