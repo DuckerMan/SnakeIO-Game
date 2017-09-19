@@ -16,15 +16,14 @@ var scrollY = 0;
 var tileSize = 0;
 var mapWidth;
 var mapHeight;
-var fpsCounter = 0;
-var od = 0;
+var backgroundColor = "#FFFFFF";
 
 function setup(){
   createCanvas(windowWidth, windowHeight);
 }
 
 function draw(){
-  background(255);
+  background(color(backgroundColor));
   render();
 }
 
@@ -66,6 +65,10 @@ function drawPlayers(players){
   for (var i = 0; i < players.length; i++) {
     drawRect(players[i].x, players[i].y, color(players[i].color));
     drawObject(players[i].tail, drawRect, color(players[i].color));
+    textAlign(CENTER);
+    textSize(20);
+    fill(0);
+    text(players[i].name, players[i].x * tileSize - scrollX + tileSize / 2, players[i].y * tileSize - scrollY + 50);
   }
 }
 
@@ -94,19 +97,13 @@ function drawRect(x, y, color){
   }
 }
 
-function newPlayer(name){
-  socket.emit("newPlayer", name);
+function newPlayer(newName, newColor){
+  socket.emit("newPlayer", {color: newColor, name: newName});
 }
 
 function createPlayer(){
   $("#new-user-modal").modal("show", "true")
 }
-
-$( ".modal-footer button" ).on( "click", function(){
-  var name = $("#username-input").value;
-  newPlayer(name);
-  $("#new-user-modal").modal("hide")
-} );
 
 socket.on("id", (newId) => {
   socket.id = newId;
@@ -123,4 +120,21 @@ socket.on("update", (data) => {
 
 socket.on("dead", (data) =>{
   createPlayer();
+});
+
+$( ".modal-footer button" ).on( "click", function(){
+  var name = $("#username-input").val();
+  var color = $("#color-picker").val();
+  backgroundColor = $("#color-picker-background").val();
+  console.log(backgroundColor);
+  newPlayer(name, color);
+  $("#new-user-modal").modal("hide")
+} );
+
+$("#color-picker").spectrum({
+  preferredFormat: "hex"
+});
+
+$("#color-picker-background").spectrum({
+  preferredFormat: "hex"
 });

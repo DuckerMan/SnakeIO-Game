@@ -99,14 +99,15 @@ Game.prototype.checkOutSide = function (ply) {
   return true;
 };
 
-Game.prototype.addPlayer = function (socketPlayer) {
+Game.prototype.addPlayer = function (socketPlayer, data) {
   socketPlayer.player = null;
-  socketPlayer.player = new Player(socketPlayer.id);
+  socketPlayer.player = new Player(socketPlayer.id, data.name, data.color);
   socketPlayer.player.x = randomInt(0, this.width);
   socketPlayer.player.y = randomInt(0, this.height);
+  socketPlayer.player.tempXSpeed = 0;
+  socketPlayer.player.tempYSpeed = 0;
   socketPlayer.player.xSpeed = 0;
   socketPlayer.player.ySpeed = 0;
-  socketPlayer.player.color = "#00FF00";
   this.players.push(socketPlayer);
 };
 
@@ -141,9 +142,11 @@ Food.prototype.getData = function () {
   }
 };
 
-var Player = function (id) {
+var Player = function (id, name, color) {
   this.tail = [];
   this.id = id;
+  this.name = name;
+  this.color = color;
 }
 
 Player.prototype.checkCollision = function (points, width, height) {
@@ -175,6 +178,10 @@ Player.prototype.addTail = function (x, y) {
 
 Player.prototype.move = function () {
   this.moveTail();
+
+  this.xSpeed = this.tempXSpeed;
+  this.ySpeed = this.tempYSpeed;
+
   this.x += this.xSpeed;
   this.y += this.ySpeed;
 };
@@ -197,14 +204,15 @@ Player.prototype.getData = function () {
     y: this.y,
     tail: this.tail,
     id: this.id,
-    color: this.color
+    color: this.color,
+    name: this.name
   }
 };
 
 Player.prototype.setSpeed = function (x, y) {
   if (this.xSpeed != x && this.ySpeed != y || this.tail.length <= 1){
-    this.xSpeed = x;
-    this.ySpeed = y;
+    this.tempXSpeed = x;
+    this.tempYSpeed = y;
   }
 };
 
@@ -232,8 +240,11 @@ var game = new Game(io);
 io.on('connection', (socket) => {
   console.log("Connected on: " + socket.id)
   socket.emit("id", socket.id);
-  socket.on('newPlayer', function() {
-    game.addPlayer(socket);
+  socket.on('newPlayer', function(data) {
+    if (data.name == null || data.name.length === 0){
+      data.name = "Noob";
+    }
+    game.addPlayer(socket, data);
   });
 
   socket.on('move', (key) => {
