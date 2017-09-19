@@ -112,7 +112,7 @@ function updateTable(){
 
   $('#scoreboard-id').append("<tr><th>Players</th><th>Score</th></tr>");
   for (var i = 0; i < players.length; i++) {
-      $('#scoreboard-id').append("<tr><td>" + players[i].name + "</td><td>" + (players[i].tail.length + 1) + "</td></tr>");
+      $('#scoreboard-id').append("<tr><td><span class=\"playerColor\" style=\"color: " + players[i].color + ";\">•</span>" + players[i].name + "</td><td>" + (players[i].tail.length + 1) + "</td></tr>");
   }
 }
 

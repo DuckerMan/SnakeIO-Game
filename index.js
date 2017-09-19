@@ -9,10 +9,10 @@ function randomInt(min, max){
 
 var Game = function (server){
   this.server = server;
-  this.width = 200;
-  this.height = 200;
+  this.width = 100;
+  this.height = 100;
   this.tileSize = 24;
-  this.amountOfFood = 500;
+  this.amountOfFood = 200;
 
   this.food = [];
   this.players = [];

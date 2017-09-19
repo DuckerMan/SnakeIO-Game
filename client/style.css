@@ -24,6 +24,7 @@ body{
   text-align: center;
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
+  margin: 0px;
 }
 
 .scoreboard table td, th{
@@ -32,6 +33,6 @@ body{
   padding-right: 4px;
 }
 
-.scoreboard li {
-  font-size: 0.9em;
+.scoreboard tr:nth-child(even){
+  background: rgba(230, 230, 230, 0.95);
 }
