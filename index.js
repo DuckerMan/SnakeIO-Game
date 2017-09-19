@@ -271,7 +271,7 @@ io.on('connection', (socket) => {
   console.log("Connected on: " + socket.id)
   socket.emit("id", socket.id);
   socket.on('newPlayer', function(data) {
-    if (data.name == null || data.name.length === 0){
+    if (data.name == null || data.name.length === 0 || data.name.length > 20){
       data.name = "Noob";
     }
     game.addPlayer(socket, data);
