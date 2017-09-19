@@ -105,6 +105,17 @@ function createPlayer(){
   $("#new-user-modal").modal("show", "true")
 }
 
+function updateTable(){
+  players.sort((b, a) => Number(a.tail.length) - Number(b.tail.length));
+
+  $(".scoreboard tr").remove();
+
+  $('#scoreboard-id').append("<tr><th>Players</th><th>Score</th></tr>");
+  for (var i = 0; i < players.length; i++) {
+      $('#scoreboard-id').append("<tr><td>" + players[i].name + "</td><td>" + (players[i].tail.length + 1) + "</td></tr>");
+  }
+}
+
 socket.on("id", (newId) => {
   socket.id = newId;
   createPlayer();
@@ -116,6 +127,7 @@ socket.on("update", (data) => {
   tileSize = data.tileSize;
   mapWidth = data.width;
   mapHeight = data.height;
+  updateTable();
 });
 
 socket.on("dead", (data) =>{

@@ -3,3 +3,35 @@ body{
   padding: 0;
   margin: 0
 }
+
+.scoreboard{
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+
+  position: fixed;
+  right: 10px;
+  top: 10px;
+}
+
+.scoreboard h1{
+  background: #007bff;
+  font-size: 1.5em;
+}
+
+.scoreboard h1{
+  padding: 10px;
+  text-align: center;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.scoreboard table td, th{
+  font-size: 1.1em;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.scoreboard li {
+  font-size: 0.9em;
+}
