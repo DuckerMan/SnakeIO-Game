@@ -138,13 +138,13 @@ socket.on("dead", (data) =>{
 
 $( ".modal-footer button" ).on( "click", function(){
   var name = $("#username-input").val();
-  var color = $("#color-picker").val();
+  var colorp = $("#color-picker").val();
   backgroundColor = $("#color-picker-background").val();
   console.log(backgroundColor);
   var strokeColor = color(backgroundColor);
   var nc = color(255-red(strokeColor),255-green(strokeColor) ,255-blue(strokeColor));
   stroke(nc);
-  newPlayer(name, color);
+  newPlayer(name, colorp);
   $("#new-user-modal").modal("hide")
 } );
 
