@@ -168,7 +168,7 @@ Game.prototype.checkDead = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null){
       if (this.players[i].player.dead){
-        this.players[i].emit("dead", player.id);
+        this.players[i].emit("dead", this.players[i].id);
         this.removePlayer(this.players[i]);
         i--;
       }
