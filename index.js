@@ -94,11 +94,11 @@ Game.prototype.checkTail = function (player, playerList) {
   return false;
 };
 
-Game.prototype.checkHead = function (player) {
+Game.prototype.checkHead = function (playerOne) {
   for (var i = 0; i < this.players.length; i++) {
-    if (this.players[i].player != null && player.player != null && this.players[i] != player){
-      if (player.player.x == this.players[i].player.x && player.player.y == this.players[i].player.y){
-        var win = this.getWinner(player, this.players[i]);
+    if (this.players[i].player != null && playerOne.player != null && this.players[i] != playerOne){
+      if (playerOne.player.x == this.players[i].player.x && playerOne.player.y == this.players[i].player.y){
+        var win = this.getWinner(playerOne, this.players[i]);
 
         if (Array.isArray(win)){
           for (var i = 0; i < win.length; i++) {
@@ -168,6 +168,7 @@ Game.prototype.checkDead = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null){
       if (this.players[i].player.dead){
+        this.players[i].emit("dead", player.id);
         this.removePlayer(this.players[i]);
         i--;
       }
