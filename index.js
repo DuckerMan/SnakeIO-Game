@@ -114,7 +114,7 @@ Game.prototype.checkHead = function (player) {
 
 Game.prototype.getWinner = function (player1, player2) {
   if (player1.player.tail.length > player2.player.tail.length) return player1;
-  else if (player1.tail.length < player2.player.tail.length) return player2;
+  else if (player1.player.tail.length < player2.player.tail.length) return player2;
   else return [player1, player2];
 };
 
