@@ -12,7 +12,7 @@ var Game = function (server){
   this.width = 100;
   this.height = 100;
   this.tileSize = 24;
-  this.amountOfFood = 10;
+  this.amountOfFood = 5;
   this.foodTimer = 0;
   this.foodLifetime = 250;
 
@@ -176,7 +176,7 @@ Game.prototype.checkDead = function () {
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
-  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, 3000);
+  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, this.foodLifetime);
   this.players.splice(this.players.indexOf(socketPlayer), 1);
   socketPlayer.player = null;
 };
