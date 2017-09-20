@@ -48,6 +48,7 @@ Game.prototype.startGame = function () {
 
 Game.prototype.update = function () {
   this.checkCollision();
+  this.checkDead();
   this.move();
   this.updateFood();
   this.server.emit("update", this.getGameData());
@@ -76,6 +77,8 @@ Game.prototype.checkCollision = function () {
       else if (this.players[i].player.checkCollision(this.food, this.width, this.height)){
         this.players[i].player.addTail();
       }
+
+      this.checkHead(this.players[i]);
     }
   }
 };
@@ -90,6 +93,32 @@ Game.prototype.checkTail = function (player, playerList) {
   }
   return false;
 };
+
+Game.prototype.checkHead = function (player) {
+  for (var i = 0; i < this.players.length; i++) {
+    if (this.players[i].player != null && this.players[i] != player){
+      if (player.player.x == this.players[i].player.x && player.player.y == this.players[i].player.y){
+        var win = this.getWinner(player, this.players[i]);
+
+        if (Array.isArray(win)){
+          for (var i = 0; i < win.length; i++) {
+            win[i].player.dead = true;
+          }
+        }else{
+          win.player.dead = true;
+        }
+      }
+    }
+  }
+};
+
+Game.prototype.getWinner = function (player1, player2) {
+  if (player1.player.tail.length > player2.player.tail.length) return player1;
+  else if (player1.tail.length < player2.player.tail.length) return player2;
+  else return [player1, player2];
+};
+
+
 
 Game.prototype.move = function () {
   for (var i = 0; i < this.players.length; i++) {
@@ -133,6 +162,17 @@ Game.prototype.addPlayer = function (socketPlayer, data) {
   socketPlayer.player.xSpeed = 0;
   socketPlayer.player.ySpeed = 0;
   this.players.push(socketPlayer);
+};
+
+Game.prototype.checkDead = function () {
+  for (var i = 0; i < this.players.length; i++) {
+    if (this.players[i].player != null){
+      if (this.players[i].player.dead){
+        this.removePlayer(this.players[i]);
+        i--;
+      }
+    }
+  }
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
