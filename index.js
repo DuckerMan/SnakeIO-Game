@@ -49,7 +49,7 @@ Game.prototype.startGame = function () {
 Game.prototype.update = function () {
   this.checkCollision();
   this.move();
-  this.checkDead();
+  // this.checkDead();
   this.updateFood();
   this.server.emit("update", this.getGameData());
 };
@@ -122,7 +122,7 @@ Game.prototype.move = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null) {
       this.players[i].player.move();
-      this.checkHead(this.players[i]);
+      // this.checkHead(this.players[i]);
     }
   }
 };
