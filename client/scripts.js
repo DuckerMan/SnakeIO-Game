@@ -141,6 +141,7 @@ $( ".modal-footer button" ).on( "click", function(){
   var color = $("#color-picker").val();
   backgroundColor = $("#color-picker-background").val();
   console.log(backgroundColor);
+  stroke((~backgroundColor) & "#ffffff");
   newPlayer(name, color);
   $("#new-user-modal").modal("hide")
 } );
