@@ -94,7 +94,6 @@ Game.prototype.checkTail = function (player, playerList) {
 
 Game.prototype.checkHead = function (playerOne) {
   for (var i = 0; i < this.players.length; i++) {
-    console.log(i);
     if (this.players[i].player != null && playerOne.player != null && this.players[i] != playerOne){
       if (playerOne.player.x == this.players[i].player.x && playerOne.player.y == this.players[i].player.y){
         var win = this.getWinner(playerOne, this.players[i]);
