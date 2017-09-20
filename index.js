@@ -12,7 +12,7 @@ var Game = function (server){
   this.width = 100;
   this.height = 100;
   this.tileSize = 24;
-  this.amountOfFood = 5;
+  this.amountOfFood = 10;
   this.foodTimer = 0;
   this.foodLifetime = 250;
 
@@ -43,7 +43,7 @@ Game.prototype.getData = function (items) {
 Game.prototype.startGame = function () {
   setInterval(() => {
     this.update();
-  }, 110);
+  }, 80);
 };
 
 Game.prototype.update = function () {
