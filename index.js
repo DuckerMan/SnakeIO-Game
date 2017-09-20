@@ -176,7 +176,7 @@ Game.prototype.checkDead = function () {
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
-  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, 10000);
+  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, 3000);
   this.players.splice(this.players.indexOf(socketPlayer), 1);
   socketPlayer.player = null;
 };
@@ -323,20 +323,10 @@ io.on('connection', (socket) => {
 
   socket.on('move', (key) => {
     if (socket.player != null){
-      switch (key) {
-        case 38:
-          socket.player.setSpeed(0,-1);
-          break;
-        case 39:
-          socket.player.setSpeed(1,0);
-          break;
-        case 40:
-          socket.player.setSpeed(0,1);
-          break;
-        case 37:
-          socket.player.setSpeed(-1,0);
-          break;
-      }
+      if (key == 87 || key == 38) socket.player.setSpeed(0,-1);
+      else if (key == 68 || key == 39) socket.player.setSpeed(1,0);
+      else if (key == 83 || key == 40) socket.player.setSpeed(0,1);
+      else if (key == 65 || key == 37) socket.player.setSpeed(-1,0);
     }
   });
 
