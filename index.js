@@ -112,8 +112,8 @@ Game.prototype.checkHead = function (playerOne) {
 };
 
 Game.prototype.getWinner = function (player1, player2) {
-  if (player1.player.tail.length > player2.player.tail.length) return player1;
-  else if (player1.player.tail.length < player2.player.tail.length) return player2;
+  if (player1.player.tail.length > player2.player.tail.length) return player2;
+  else if (player1.player.tail.length < player2.player.tail.length) return player1;
   else return [player1, player2];
 };
 
@@ -168,7 +168,6 @@ Game.prototype.checkDead = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null){
       if (this.players[i].player.dead){
-        console.log("DEAD");
         this.players[i].emit("dead", this.players[i].id);
         this.removePlayer(this.players[i]);
         i--;
