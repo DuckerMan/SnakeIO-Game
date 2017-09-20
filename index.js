@@ -48,8 +48,8 @@ Game.prototype.startGame = function () {
 
 Game.prototype.update = function () {
   this.checkCollision();
-  this.checkDead();
   this.move();
+  this.checkDead();
   this.updateFood();
   this.server.emit("update", this.getGameData());
 };
@@ -77,8 +77,6 @@ Game.prototype.checkCollision = function () {
       else if (this.players[i].player.checkCollision(this.food, this.width, this.height)){
         this.players[i].player.addTail();
       }
-
-      this.checkHead(this.players[i]);
     }
   }
 };
@@ -124,6 +122,7 @@ Game.prototype.move = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null) {
       this.players[i].player.move();
+      this.checkHead(this.players[i]);
     }
   }
 };
@@ -168,6 +167,7 @@ Game.prototype.checkDead = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null){
       if (this.players[i].player.dead){
+        console.log("DEAD");
         this.players[i].emit("dead", this.players[i].id);
         this.removePlayer(this.players[i]);
         i--;
