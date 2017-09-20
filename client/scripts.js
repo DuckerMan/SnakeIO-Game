@@ -69,7 +69,7 @@ function drawPlayers(players){
     drawObject(players[i].tail, drawRect, color(players[i].color));
     textAlign(CENTER);
     textSize(20);
-    fill(0);
+    fill(color(players[i].color));
     text(players[i].name, players[i].x * tileSize - scrollX + tileSize / 2, players[i].y * tileSize - scrollY + 50);
   }
 }
