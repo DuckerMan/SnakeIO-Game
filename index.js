@@ -43,7 +43,7 @@ Game.prototype.getData = function (items) {
 Game.prototype.startGame = function () {
   setInterval(() => {
     this.update();
-  }, 110);
+  }, 80);
 };
 
 Game.prototype.update = function () {
@@ -175,7 +175,7 @@ Game.prototype.checkDead = function () {
 };
 
 Game.prototype.removePlayer = function (socketPlayer) {
-  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, 3000);
+  this.players[this.players.indexOf(socketPlayer)].player.destroy(this.food, this.foodLifetime);
   this.players.splice(this.players.indexOf(socketPlayer), 1);
   socketPlayer.player = null;
 };
