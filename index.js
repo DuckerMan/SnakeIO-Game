@@ -160,10 +160,6 @@ Game.prototype.addPlayer = function (socketPlayer, data) {
   socketPlayer.player.tempYSpeed = 0;
   socketPlayer.player.xSpeed = 0;
   socketPlayer.player.ySpeed = 0;
-
-  for (var i = 0; i < 3; i++) {
-    socketPlayer.player.addTail(-1,-1);
-  }
   this.players.push(socketPlayer);
 };
 
