@@ -43,7 +43,7 @@ Game.prototype.getData = function (items) {
 Game.prototype.startGame = function () {
   setInterval(() => {
     this.update();
-  }, 80);
+  }, 40);
 };
 
 Game.prototype.update = function () {
@@ -160,6 +160,10 @@ Game.prototype.addPlayer = function (socketPlayer, data) {
   socketPlayer.player.tempYSpeed = 0;
   socketPlayer.player.xSpeed = 0;
   socketPlayer.player.ySpeed = 0;
+
+  for (var i = 0; i < 3; i++) {
+    this.addTail();
+  }
   this.players.push(socketPlayer);
 };
 
