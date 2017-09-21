@@ -167,8 +167,7 @@ Game.prototype.checkDead = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].player != null){
       if (this.players[i].player.dead){
-        this.players[i].emit("dead", this.players[i].id);
-        this.removePlayer(this.players[i]);
+        this.dead(this.players[i]);
         i--;
       }
     }
@@ -282,7 +281,7 @@ Player.prototype.getData = function () {
 };
 
 Player.prototype.setSpeed = function (x, y) {
-  if (this.xSpeed != x && this.ySpeed != y || this.tail.length <= 1){
+  if (this.xSpeed != x && this.ySpeed != y || this.tail.length <= 0){
     this.tempXSpeed = x;
     this.tempYSpeed = y;
   }
