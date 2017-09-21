@@ -162,7 +162,7 @@ Game.prototype.addPlayer = function (socketPlayer, data) {
   socketPlayer.player.ySpeed = 0;
 
   for (var i = 0; i < 3; i++) {
-    this.addTail();
+    socketPlayer.player.addTail();
   }
   this.players.push(socketPlayer);
 };
